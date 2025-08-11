@@ -1,4 +1,6 @@
 const renderCanvas = document.getElementById("renderCanvas");
+renderCanvas.width = window.innerWidth;
+renderCanvas.height = window.innerHeight;
 const ctx = renderCanvas.getContext("webgpu");
 let canvasTexture;
 
@@ -78,6 +80,9 @@ async function init() {
 }
 
 function draw(currentTime) {
+    const r = mat4.rotation([0, 1, 0], utils.degToRad(currentTime) * 0.05);
+    device.queue.writeBuffer(sceneBuffer, 64, r);
+
     renderPassDescriptor.colorAttachments[0].view = ctx.getCurrentTexture().createView();
     const encoder = device.createCommandEncoder({ label: "encoder" });
 
@@ -108,10 +113,11 @@ function createBuffers() {
     device.queue.writeBuffer(indexBuffer, 0, cube.indices);
 
     const camera = new Camera(canvasTexture.width / canvasTexture.height);
-    camera.position = [0, 0, 5];
+    camera.position = [0, 2, 5];
+    camera.lookTo = [0, -1, -2];
     camera.updateLookAt();
     sceneBuffer = device.createBuffer({
-        size: 64,
+        size: 128,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
     device.queue.writeBuffer(sceneBuffer, 0, camera.viewProjectionMatrix);
