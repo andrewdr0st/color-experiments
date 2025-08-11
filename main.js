@@ -66,7 +66,7 @@ async function setupGPU() {
 
 async function init() {
     await setupGPU();
-    pallete = await loadHexPallete("ufo-50.hex");
+    pallete = await loadHexPallete("resurrect-64.hex");
     let loader = new MeshLoader();
     await loader.parseObjFile("cube.obj");
     cube = loader.getMesh();
@@ -82,6 +82,7 @@ async function init() {
 function draw(currentTime) {
     const r = mat4.rotation([0, 1, 0], utils.degToRad(currentTime) * 0.05);
     device.queue.writeBuffer(sceneBuffer, 64, r);
+    device.queue.writeBuffer(sceneBuffer, 128, new Float32Array([Math.sin(currentTime * 0.0003)]));
 
     renderPassDescriptor.colorAttachments[0].view = ctx.getCurrentTexture().createView();
     const encoder = device.createCommandEncoder({ label: "encoder" });
@@ -117,7 +118,7 @@ function createBuffers() {
     camera.lookTo = [0, -1, -2];
     camera.updateLookAt();
     sceneBuffer = device.createBuffer({
-        size: 128,
+        size: 144,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
     device.queue.writeBuffer(sceneBuffer, 0, camera.viewProjectionMatrix);

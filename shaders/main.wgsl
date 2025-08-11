@@ -6,7 +6,8 @@ struct vertex {
 
 struct sceneInfo {
     view: mat4x4f,
-    world: mat4x4f
+    world: mat4x4f,
+    maxh: f32
 }
 
 struct vsOutput {
@@ -15,18 +16,19 @@ struct vsOutput {
 };
 
 @group(0) @binding(0) var<uniform> scene: sceneInfo;
-@group(0) @binding(1) var<uniform> pallete: array<vec3f, 32>;
+@group(0) @binding(1) var<uniform> pallete: array<vec3f, 64>;
 @vertex fn vs(vert: vertex) -> vsOutput {
     var vsOut: vsOutput;
-    vsOut.position = scene.view * scene.world * vert.pos;
-    vsOut.color = vert.pos.xyz * 0.5 + 0.5;
+    let pos = vec4f(vert.pos.x, min(vert.pos.y, scene.maxh), vert.pos.z, vert.pos.w);
+    vsOut.position = scene.view * scene.world * pos;
+    vsOut.color = pos.xyz * 0.5 + 0.5;
     return vsOut;
 }
 
 @fragment fn fs(fsIn: vsOutput) -> @location(0) vec4f {
     var dist = 10000.0;
     var p = 0;
-    for (var i = 0; i < 32; i++) {
+    for (var i = 0; i < 64; i++) {
         let v = fsIn.color - pallete[i];
         let d = v.x * v.x + v.y * v.y + v.z * v.z;
         if (d < dist) {
