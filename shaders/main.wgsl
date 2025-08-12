@@ -29,7 +29,7 @@ struct vsOutput {
     var dist = 10000.0;
     var p = 0;
     for (var i = 0; i < 64; i++) {
-        let v = fsIn.color - pallete[i];
+        let v = fsIn.color - pow(pallete[i], vec3f(2.2));
         let d = v.x * v.x + v.y * v.y + v.z * v.z;
         if (d < dist) {
             dist = d;
