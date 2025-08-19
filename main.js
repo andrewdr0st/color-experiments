@@ -66,7 +66,7 @@ async function setupGPU() {
 
 async function init() {
     await setupGPU();
-    pallete = await loadHexPallete("resurrect-64.hex");
+    pallete = await loadHexPallete("illu32.hex");
     let loader = new MeshLoader();
     await loader.parseObjFile("cube.obj");
     cube = loader.getMesh();
